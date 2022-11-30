@@ -2,4 +2,4 @@
 
 ---
 
-studi kasus membuat aplikasi python scraping
+studi kasus membuat aplikasi python scraping,
