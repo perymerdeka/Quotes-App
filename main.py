@@ -1,5 +1,6 @@
 import json
 import requests
+import pandas as pd
 from bs4 import BeautifulSoup
 
 url: str = "https://quotes.toscrape.com"
@@ -37,6 +38,7 @@ def get_quotes(url: str):
             json.dump(quotes_list, f)
 
         print("Data Berhasil di Generate")
+        return quotes_list
 
 
 def get_detail(detail_url: str):
@@ -59,10 +61,36 @@ def get_detail(detail_url: str):
             "description": description,
         }
 
-        print(data_dict)
-
         return data_dict
+
+def generate_format(filename: str, results: list):
+    df =  pd.DataFrame(results)
+    if ".csv" or ".xlsx" not in filename:
+        df.to_csv(filename + ".csv",index=False)
+        df.to_excel(filename + ".xlsx",index=False)
+
+    print("data generated")
+
+
+def crawling():
+    results: list[dict[str, str]] = []
+    
+    quotes: list = get_quotes(url=url)
+    for quote in quotes:
+        detail = get_detail(detail_url=quote['author detail'])
+
+        final_result: dict = {**quote, **detail}
+        
+        results.append(final_result)
+
+    # olah data
+    generate_format(results=results, filename="reports")
+
+    return results
+
+        
+
 
 
 if __name__ == "__main__":
-    get_detail("https://quotes.toscrape.com/author/Thomas-A-Edison")
+    crawling()
